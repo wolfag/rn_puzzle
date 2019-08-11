@@ -6,108 +6,107 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  ScrollView,
-  View,
-  Text,
   StatusBar,
+  UIManager,
+  Platform,
+  Image,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import LinearGradient from 'react-native-linear-gradient';
 
-const App = () => {
-  return (
-    <Fragment>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
+import { createPuzzle } from './src/utils/puzzle';
+import { getRandomImage } from './src/utils/api';
+import Game from './src/screens/Game';
+import Start from './src/screens/Start';
+
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const BACKGROUND_COLORS = ['#1b1d34', '#2a2a38'];
+
+class App extends React.Component {
+  state = {
+    size: 3,
+    puzzle: null,
+    image: null,
+  };
+
+  componentDidMount() {
+    this.preloadNextImage();
+  }
+
+  async preloadNextImage() {
+    const image = await getRandomImage();
+
+    Image.prefetch(image.uri);
+
+    this.setState({ image });
+  }
+
+  handleChangeSize = size => {
+    this.setState({ size });
+  };
+
+  handleStartGame = () => {
+    const { size } = this.state;
+
+    this.setState({ puzzle: createPuzzle(size) });
+  };
+
+  handleGameChange = puzzle => {
+    this.setState({ puzzle });
+  };
+
+  handleQuit = () => {
+    this.setState({ puzzle: null, image: null });
+
+    this.preloadNextImage();
+  };
+
+  render() {
+    const { size, puzzle, image } = this.state;
+
+    return (
+      <LinearGradient style={styles.background} colors={BACKGROUND_COLORS}>
+        <StatusBar barStyle={'light-content'} />
+        <SafeAreaView style={styles.container}>
+          {!puzzle && (
+            <Start
+              size={size}
+              onStartGame={this.handleStartGame}
+              onChangeSize={this.handleChangeSize}
+            />
           )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Fragment>
-  );
-};
+          {puzzle && (
+            <Game
+              puzzle={puzzle}
+              image={image}
+              onChange={this.handleGameChange}
+              onQuit={this.handleQuit}
+            />
+          )}
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  background: {
+    flex: 1,
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  container: {
+    flex: 1,
+    marginTop:
+      Platform.OS === 'android' || parseInt(Platform.Version, 10) < 11 ? 20 : 0,
   },
 });
 
