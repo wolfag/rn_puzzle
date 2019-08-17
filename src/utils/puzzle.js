@@ -1,3 +1,11 @@
+export const DIRECTION = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+  NONE: 'none',
+};
+
 /**
  * Creates an array containing integers from 0 up to `max`.
  *
@@ -69,10 +77,10 @@ export function movableSquares(puzzle) {
   const emptyIndex = getIndex(puzzle, empty);
 
   const adjacent = [
-    emptyIndex - size,
-    emptyIndex + size,
-    emptyIndex % size !== 0 ? emptyIndex - 1 : null,
-    emptyIndex % size !== size - 1 ? emptyIndex + 1 : null,
+    emptyIndex - size, // top
+    emptyIndex + size, // down
+    emptyIndex % size !== 0 ? emptyIndex - 1 : null, // left
+    emptyIndex % size !== size - 1 ? emptyIndex + 1 : null, // right
   ]
     .filter(index => index !== null && index >= 0 && index < size * size)
     .map(index => board[index]);
@@ -95,12 +103,12 @@ export function availableMove(puzzle, square) {
 
   const canMove = movableSquares(puzzle).includes(square);
 
-  if (canMove && squareIndex - size === emptyIndex) return 'up';
-  if (canMove && squareIndex + size === emptyIndex) return 'down';
-  if (canMove && squareIndex - 1 === emptyIndex) return 'left';
-  if (canMove && squareIndex + 1 === emptyIndex) return 'right';
+  if (canMove && squareIndex - size === emptyIndex) return DIRECTION.UP;
+  if (canMove && squareIndex + size === emptyIndex) return DIRECTION.DOWN;
+  if (canMove && squareIndex - 1 === emptyIndex) return DIRECTION.LEFT;
+  if (canMove && squareIndex + 1 === emptyIndex) return DIRECTION.RIGHT;
 
-  return 'none';
+  return DIRECTION.NONE;
 }
 
 /**

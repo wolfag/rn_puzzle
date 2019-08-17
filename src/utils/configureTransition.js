@@ -1,8 +1,10 @@
 import { LayoutAnimation, Platform } from 'react-native';
 
+const DURATION = 750;
+
 export default function configureTransition(onConfigured = () => {}) {
   const animation = LayoutAnimation.create(
-    750,
+    DURATION,
     LayoutAnimation.Types.easeInEaseOut,
     LayoutAnimation.Properties.opacity,
   );
@@ -11,7 +13,7 @@ export default function configureTransition(onConfigured = () => {}) {
     // Workaround for missing LayoutAnimation callback support on Android
     if (Platform.OS === 'android') {
       LayoutAnimation.configureNext(animation);
-      setTimeout(resolve, 750);
+      setTimeout(resolve, DURATION);
     } else {
       LayoutAnimation.configureNext(animation, resolve);
     }

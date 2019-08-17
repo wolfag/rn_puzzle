@@ -24,8 +24,8 @@ import Game from './src/screens/Game';
 import Start from './src/screens/Start';
 
 if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
+  Platform.OS === 'android'
+  && UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -45,7 +45,6 @@ class App extends React.Component {
 
   async preloadNextImage() {
     const image = await getRandomImage();
-
     Image.prefetch(image.uri);
 
     this.setState({ image });
@@ -76,7 +75,7 @@ class App extends React.Component {
 
     return (
       <LinearGradient style={styles.background} colors={BACKGROUND_COLORS}>
-        <StatusBar barStyle={'light-content'} />
+        <StatusBar barStyle="light-content" />
         <SafeAreaView style={styles.container}>
           {!puzzle && (
             <Start

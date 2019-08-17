@@ -12,7 +12,7 @@ import PuzzlePropType from '../validators/PuzzlePropType';
 
 import Draggable from './Draggable';
 
-import { availableMove, getIndex } from '../utils/puzzle';
+import { availableMove, getIndex, DIRECTION } from '../utils/puzzle';
 import {
   calculateContainerSize,
   calculateItemPosition,
@@ -25,13 +25,6 @@ const State = {
   WillTransitionIn: 'WillTransitionIn',
   DidTransitionIn: 'DidTransitionIn',
   DidTransitionOut: 'DidTransitionOut',
-};
-
-const DIRECTION = {
-  UP: 'up',
-  DOWN: 'down',
-  LEFT: 'left',
-  RIGHT: 'right',
 };
 
 export default class Board extends React.PureComponent {
@@ -88,8 +81,10 @@ export default class Board extends React.PureComponent {
       previousMove, onTransitionOut, puzzle, teardown,
     } = nextProps;
 
-    const didMovePiece = this.props.puzzle !== puzzle && previousMove !== null;
-    const shouldTearDown = !this.props.teardown && teardown;
+    const { puzzle: curPuzzle, teardown: curTearDown } = this.props;
+
+    const didMovePiece = curPuzzle !== puzzle && previousMove !== null;
+    const shouldTearDown = !curTearDown && teardown;
 
     if (didMovePiece) {
       await this.updateSquarePosition(
@@ -270,7 +265,7 @@ export default class Board extends React.PureComponent {
             transform: [
               {
                 translateX:
-                  -Math.floor(square % size) * (itemMargin + itemSize),
+                  -(square % size) * (itemMargin + itemSize),
               },
               {
                 translateY:

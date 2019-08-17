@@ -33,9 +33,11 @@ export default class Game extends React.Component {
     onQuit: PropTypes.func.isRequired,
   };
 
-  static defaultProps={
+  static defaultProps = {
     image: null,
   }
+
+  isPause = false;
 
   constructor(props) {
     super(props);
@@ -67,7 +69,7 @@ export default class Game extends React.Component {
     this.intervalId = setInterval(() => {
       const { elapsed } = this.state;
 
-      this.setState({ elapsed: elapsed + 1 });
+      if (!this.isPause) { this.setState({ elapsed: elapsed + 1 }); }
     }, 1000);
   };
 
@@ -89,11 +91,12 @@ export default class Game extends React.Component {
   };
 
   handlePressQuit = () => {
+    this.isPause = true;
     Alert.alert(
       'Quit',
       'Do you want to quit and lose progress on this puzzle?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel', onPress: this.startTimer },
         {
           text: 'Quit',
           style: 'destructive',
@@ -102,6 +105,10 @@ export default class Game extends React.Component {
       ],
     );
   };
+
+  startTimer = () => {
+    this.isPause = false;
+  }
 
   handlePressSquare = square => {
     const { puzzle, onChange } = this.props;

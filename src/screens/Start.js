@@ -9,7 +9,7 @@ import Logo from '../components/Logo';
 import sleep from '../utils/sleep';
 import configureTransition from '../utils/configureTransition';
 
-const BOARD_SIZES = [3, 4, 5, 6];
+const BOARD_SIZES = [3, 4, 5, 6, 7, 8];
 
 const State = {
   Launching: 'Launching',

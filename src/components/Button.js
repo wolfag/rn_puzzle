@@ -9,11 +9,12 @@ import {
 import PropTypes from 'prop-types';
 
 const getValue = (pressed, disabled) => {
-  const base = disabled ? 0.5 : 1;
-  const delta = disabled ? 0.1 : 0.3;
+  const [base, delta] = disabled ? [0.5, 0.1] : [1, 0.3];
 
   return pressed ? base - delta : base;
 };
+
+const BaseColor = 'white';
 
 export default class Button extends React.Component {
   static propTypes = {
@@ -83,9 +84,14 @@ export default class Button extends React.Component {
       fontSize,
     } = this.props;
 
-    const animatedColor = this.value.interpolate({
+    const animatedButtonColor = this.value.interpolate({
       inputRange: [0, 1],
-      outputRange: ['black', color],
+      outputRange: [BaseColor, color],
+    });
+
+    const animatedTitleColor = this.value.interpolate({
+      inputRange: [0, 1],
+      outputRange: [color, BaseColor],
     });
 
     const animatedScale = this.value.interpolate({
@@ -94,14 +100,14 @@ export default class Button extends React.Component {
     });
 
     const containerStyle = {
-      borderColor: animatedColor,
+      borderColor: animatedButtonColor,
       borderRadius,
       height,
       transform: [{ scale: animatedScale }],
     };
 
     const titleStyle = {
-      color: animatedColor,
+      color: animatedTitleColor,
       fontSize,
     };
 
