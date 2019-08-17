@@ -29,6 +29,7 @@ export default class Start extends React.Component {
   };
 
   toggleOpacity = new Animated.Value(0);
+
   buttonOpacity = new Animated.Value(0);
 
   async componentDidMount() {

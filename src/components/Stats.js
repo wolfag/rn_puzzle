@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import formatElapsedTime from '../utils/formatElapsedTime';
 
@@ -19,6 +20,11 @@ export default function Stats({ time, moves }) {
     </View>
   );
 }
+
+Stats.propTypes = {
+  time: PropTypes.number.isRequired,
+  moves: PropTypes.number.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {

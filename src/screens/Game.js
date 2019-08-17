@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
+import { move, movableSquares, isSolved } from '../utils/puzzle';
 import PuzzlePropType from '../validators/PuzzlePropType';
 
 import Preview from '../components/Preview';
@@ -32,6 +33,10 @@ export default class Game extends React.Component {
     onQuit: PropTypes.func.isRequired,
   };
 
+  static defaultProps={
+    image: null,
+  }
+
   constructor(props) {
     super(props);
 
@@ -42,7 +47,6 @@ export default class Game extends React.Component {
       moves: 0,
       elapsed: 0,
       previousMove: null,
-      image: null,
     };
 
     configureTransition();
@@ -71,13 +75,18 @@ export default class Game extends React.Component {
     const { onQuit } = this.props;
 
     await configureTransition(() => {
-      this.setState({ transitionState: State.RequestTransitionOut });
+      this.setState({ transitionState: State.WillTransitionOut });
     });
 
     onQuit();
   };
 
-  handlePressSquare = () => {};
+
+  requestTransitionOut = () => {
+    clearInterval(this.intervalId);
+
+    this.setState({ transitionState: State.RequestTransitionOut });
+  };
 
   handlePressQuit = () => {
     Alert.alert(
@@ -88,10 +97,29 @@ export default class Game extends React.Component {
         {
           text: 'Quit',
           style: 'destructive',
-          onPress: this.RequestTransitionOut,
+          onPress: this.requestTransitionOut,
         },
       ],
     );
+  };
+
+  handlePressSquare = square => {
+    const { puzzle, onChange } = this.props;
+    const { moves } = this.state;
+
+    if (!movableSquares(puzzle).includes(square)) {
+      return;
+    }
+
+    const updated = move(puzzle, square);
+
+    this.setState({ moves: moves + 1, previousMove: square });
+
+    onChange(updated);
+
+    if (isSolved(updated)) {
+      this.requestTransitionOut();
+    }
   };
 
   render() {
@@ -100,12 +128,14 @@ export default class Game extends React.Component {
       puzzle: { size },
       image,
     } = this.props;
-    const { transitionState, moves, elapsed, previousMove } = this.state;
+    const {
+      transitionState, moves, elapsed, previousMove,
+    } = this.state;
     return (
       transitionState !== State.WillTransitionOut && (
         <View style={styles.container}>
           {transitionState === State.LoadingImage && (
-            <ActivityIndicator size={'large'} color={'rgba(255,255,255,0.5'} />
+            <ActivityIndicator size="large" color="rgba(255,255,255,0.5" />
           )}
           {transitionState !== State.LoadingImage && (
             <View style={styles.centered}>

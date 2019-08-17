@@ -2,9 +2,7 @@ import React from 'react';
 import {
   ColorPropType,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
-  View,
   Easing,
   Animated,
 } from 'react-native';
@@ -56,8 +54,8 @@ export default class Button extends React.Component {
 
   updateValue(nextProps, nextState) {
     if (
-      this.props.disabled !== nextProps.disabled ||
-      this.state.pressed !== nextState.pressed
+      this.props.disabled !== nextProps.disabled
+      || this.state.pressed !== nextState.pressed
     ) {
       Animated.timing(this.value, {
         duration: 200,
